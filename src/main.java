@@ -20,43 +20,49 @@ public class main {
 
     static String[] primary_fields = {
             "eventId",
-            "appName",
-            "partnerId",
-            "platformId",
-            "plat",
-            "vName",
-            "pcId",
-            "vApp",
-            "logTime",
-            "ip",
-            "sessionId",
-            "abId",
-            "userId",
-            "devId",
-            "unique_id",
-            "mac",
-            "imei",
-            "udid",
-            "idfa",
-            "pName",
-            "vOs",
-            "model",
-            "brand",
-            "facturer",
-            "resolution",
-            "density",
-            "dpi",
-            "cpu",
-            "net",
             "carrier"};
 
     static void test2() {
+        ArrayList<Object[]> result = new ArrayList<Object[]>();
+
+        ArrayList<String> infos =
+                new ArrayList<String>(Arrays.asList(primary_fields));
+        infos.add(0, "test");
+
+        result.add(infos.toArray(new String[0]));
+
         for (String f: primary_fields) {
             System.out.println(f);
         }
     }
 
+    static void test3() {
+        List<String> list = new ArrayList<String>();
+        //add some stuff
+        list.add("android");
+        list.add("apple");
+        String[] stringArray = list.toArray(new String[0]);
+
+        for (String f: stringArray) {
+            System.out.println(f);
+        }
+
+        stringArray[0] = "hello";
+
+        for (String f: stringArray) {
+            System.out.println(f);
+        }
+    }
+
+    static void test4() {
+        Integer i = null;
+        if (i != null) {
+            String s = i.toString();
+            System.out.println(s);
+        }
+    }
+
     public static void main(String[] args) {
-        test2();
+        test4();
     }
 }
