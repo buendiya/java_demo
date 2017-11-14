@@ -1,0 +1,5 @@
+DEBUG   2017-09-03 16:01:47,929 [main] snippet.logging.Demo1  - This is debug : mkyong
+INFO    2017-09-03 16:01:47,931 [main] snippet.logging.Demo1  - This is info : mkyong
+WARN    2017-09-03 16:01:47,931 [main] snippet.logging.Demo1  - This is warn : mkyong
+ERROR   2017-09-03 16:01:47,931 [main] snippet.logging.Demo1  - This is error : mkyong
+FATAL   2017-09-03 16:01:47,931 [main] snippet.logging.Demo1  - This is fatal : mkyong

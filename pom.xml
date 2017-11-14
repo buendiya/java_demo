@@ -41,6 +41,90 @@
         <hadoop.mr.version>2.6.0-mr1-cdh5.9.1-SNAPSHOT</hadoop.mr.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+
+        <!--<dependency>-->
+        <!--<groupId>org.apache.hadoop</groupId>-->
+        <!--<artifactId>hadoop-common</artifactId>-->
+        <!--<version>${hadoop.version}</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.32</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>1.2.0-cdh5.11.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jline</groupId>
+                    <artifactId>jline</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>0.10.0.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka_2.10 -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.10</artifactId>
+            <version>0.10.0.0</version>
+        </dependency>
+
+
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -59,15 +143,23 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.0.2</version>
-                    <!--<configuration>-->
-                    <!--<archive>-->
-                    <!--<manifest>-->
-                    <!--<addClasspath>true</addClasspath>-->
-                    <!--<classpathPrefix>lib/</classpathPrefix>-->
-                    <!--<mainClass>kg.profile.UserKeywordThriftJavaTest</mainClass>-->
-                    <!--</manifest>-->
-                    <!--</archive>-->
-                    <!--</configuration>-->
+                    <configuration>
+                        <!--<archive>-->
+                            <!--<manifest>-->
+                                <!--<addClasspath>true</addClasspath>-->
+                                <!--<classpathPrefix>lib/</classpathPrefix>-->
+                                <!--<mainClass>kg.profile.UserKeywordThriftJavaTest</mainClass>-->
+                            <!--</manifest>-->
+                        <!--</archive>-->
+                        <archive>
+                            <addMavenDescriptor>true</addMavenDescriptor>
+                        </archive>
+
+                        <excludes>
+                            <exclude>**/app.properties</exclude>
+                        </excludes>
+
+                    </configuration>
                 </plugin>
 
             </plugins>
@@ -101,31 +193,72 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
+
     </build>
 
-    <dependencies>
-        <dependency>
-            <groupId>apache-log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.15</version>
-        </dependency>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>env</name>
+                    <value>!release</value>
+                </property>
+            </activation>
 
-        <!--<dependency>-->
-            <!--<groupId>org.apache.hadoop</groupId>-->
-            <!--<artifactId>hadoop-common</artifactId>-->
-            <!--<version>${hadoop.version}</version>-->
-        <!--</dependency>-->
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <!-- maven assembly插件需要一个描述文件 来告诉插件包的结构以及打包所需的文件来自哪里 -->
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/dev.xml</descriptor>
+                            </descriptors>
+                            <!--<finalName>demo-dev</finalName>-->
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.32</version>
-        </dependency>
+        </profile>
 
-    </dependencies>
+        <profile>
+            <id>release</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>release</value>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <!-- 发布模式使用的maven assembly插件描述文件 -->
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
+                            </descriptors>
+                            <!-- 如果一个应用的包含多个deploy模块，如果使用同样的包名， 如果把它们复制的一个目录中可能会失败，所以包名加了 artifactId以示区分 -->
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <!-- scm 要求 release 模式打出的包放到顶级目录下的target子目录中 -->
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 
     <repositories>
+
         <repository>
             <id>cloudera</id>
             <url>https://repository.cloudera.com/content/repositories/snapshots</url>
@@ -133,5 +266,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+
     </repositories>
+
 </project>
